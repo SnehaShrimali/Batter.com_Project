@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Appointment - Barter.com{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center" style="min-height: 60vh;">
+        <div class="col-lg-8">
+            <div class="rounded-4 overflow-hidden" style="background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid rgba(220,81,5,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.04);">
+                <div class="p-5">
+                    <div class="text-center mb-4">
+                        <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(220,81,5,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="fas fa-calendar-check fa-2x" style="color: var(--orange-accent);"></i>
+                        </div>
+                        <h3 class="fw-bold" style="color: var(--text-primary);">Book a Viewing</h3>
+                        <p style="color: var(--text-secondary);">Schedule an appointment to visit <strong style="color: var(--orange-light);">{{ property.title }}</strong></p>
+                    </div>
+
+                    <div class="row g-3 mb-4 p-3 rounded-3" style="background: rgba(220,81,5,0.05); border: 1px solid rgba(220,81,5,0.1);">
+                        <div class="col-md-4 text-center">
+                            <small class="d-block" style="color: var(--text-secondary);">Price</small>
+                            <strong style="color: var(--orange-light); font-size: 1.2rem;">${{ property.price|floatformat:0 }}</strong>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <small class="d-block" style="color: var(--text-secondary);">Location</small>
+                            <strong style="color: var(--orange-light);">{{ property.city }}, {{ property.state }}</strong>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <small class="d-block" style="color: var(--text-secondary);">Type</small>
+                            <strong style="color: var(--orange-light);">{{ property.get_property_type_display }}</strong>
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                                <i class="fas fa-exclamation-circle"></i> {{ form.non_field_errors.0 }}
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold" style="color: var(--orange-light);">
+                                    <i class="fas fa-calendar me-1"></i> Date & Time
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-clock" style="color: var(--green-light);"></i></span>
+                                    {{ form.appointment_date }}
+                                </div>
+                                {% if form.appointment_date.errors %}
+                                    <div class="text-danger small mt-1">{{ form.appointment_date.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-semibold" style="color: var(--orange-light);">
+                                    <i class="fas fa-credit-card me-1"></i> Payment Method
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-money-bill" style="color: var(--green-light);"></i></span>
+                                    {{ form.payment_method }}
+                                </div>
+                                {% if form.payment_method.errors %}
+                                    <div class="text-danger small mt-1">{{ form.payment_method.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold" style="color: var(--orange-light);">
+                                <i class="fas fa-sticky-note me-1"></i> Notes
+                            </label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                                <div class="text-danger small mt-1">{{ form.notes.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-4">
+                            <a href="{% url 'properties:property_detail' property.slug %}" class="btn btn-outline-secondary px-4">
+                                <i class="fas fa-arrow-left me-1"></i> Back
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 fw-bold">
+                                <i class="fas fa-check me-2"></i> Book Appointment
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

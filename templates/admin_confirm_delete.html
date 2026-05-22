@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %}Delete {{ type|title }} - Admin{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="glass-card p-5 text-center">
+            <div style="width: 90px; height: 90px; border-radius: 50%; background: rgba(233, 69, 96, 0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                <i class="fas fa-exclamation-triangle fa-3x" style="color: #e94560;"></i>
+            </div>
+            <h3 class="fw-bold mb-2" style="color: #1b5e20;">Delete {{ type|title }}?</h3>
+            <p style="color: #558b2f; margin-bottom: 1.5rem;">Are you sure you want to delete "{{ obj }}"? This action cannot be undone.</p>
+
+            {% if type == 'property' and obj.main_image %}
+                <img src="{{ obj.main_image.url }}" alt="{{ obj }}" class="img-fluid rounded-3 mb-4" style="max-height: 200px; object-fit: cover; border-radius: 12px;">
+            {% endif %}
+
+            <div class="d-flex justify-content-center gap-3">
+                <a href="javascript:history.back()" class="btn btn-outline-secondary px-4">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn px-4" style="background: linear-gradient(135deg, #e94560, #c0392b); color: white; border: none; border-radius: 12px;">
+                        <i class="fas fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

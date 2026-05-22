@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Barter.com{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Welcome Header -->
+    <div class="page-header mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <h2 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fas fa-tachometer-alt me-2" style="color: var(--orange-accent);"></i> Welcome, {{ user.username }}!</h2>
+                <p class="mb-0" style="color: var(--text-secondary);">Manage your properties and inquiries from your dashboard.</p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a href="{% url 'properties:property_create' %}" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-plus"></i> Add New Property
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-home" style="background: linear-gradient(135deg, var(--green-light), var(--orange-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                <h3>{{ property_count }}</h3>
+                <p>Total Listings</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-check-circle" style="background: linear-gradient(135deg, var(--green-light), var(--orange-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                <h3>{{ properties_available|default:"0" }}</h3>
+                <p>Available</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-eye" style="background: linear-gradient(135deg, var(--green-light), var(--orange-accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                <h3>--</h3>
+                <p>Total Views</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <i class="fas fa-clock" style="background: linear-gradient(135deg, var(--orange-accent), var(--orange-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>
+                <h3>{{ properties_pending|default:"0" }}</h3>
+                <p>Pending</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="icon-circle">
+                    <i class="fas fa-home fa-2x"></i>
+                </div>
+                <h5 class="fw-bold">My Properties</h5>
+                <p>View and manage your listed properties. Edit details, update status, or remove listings.</p>
+                <a href="{% url 'properties:property_list' %}" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-arrow-right"></i> View Properties
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="icon-circle">
+                    <i class="fas fa-plus-circle fa-2x"></i>
+                </div>
+                <h5 class="fw-bold">Add Property</h5>
+                <p>List a new property for sale or rent. Upload photos and add detailed descriptions.</p>
+                <a href="{% url 'properties:property_create' %}" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-plus"></i> Add New
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="dashboard-card text-center">
+                <div class="icon-circle">
+                    <i class="fas fa-clipboard-list fa-2x"></i>
+                </div>
+                <h5 class="fw-bold">Approval Requests</h5>
+                <p>Submit and track approval requests. {% if pending_approval_count > 0 %}You have <strong>{{ pending_approval_count }}</strong> pending request(s).{% endif %}</p>
+                <a href="{% url 'properties:my_approval_requests' %}" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-arrow-right"></i> View Requests
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Properties Table -->
+    {% if properties %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="admin-card">
+                <div class="card-header">
+                    <i class="fas fa-list me-2"></i> Your Properties
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for p in properties %}
+                                <tr>
+                                    <td>
+                                        <a href="{% url 'properties:property_detail' p.slug %}" class="text-decoration-none fw-semibold" style="color: var(--orange-accent);">
+                                            {{ p.title }}
+                                        </a>
+                                    </td>
+                                    <td style="color: var(--text-secondary);">{{ p.get_property_type_display }}</td>
+                                    <td style="color: var(--orange-light); font-weight: 600;">${{ p.price|floatformat:0 }}</td>
+                                    <td>
+                                        <span class="badge {% if p.status == 'available' %}bg-success{% elif p.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                            {{ p.get_status_display }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'properties:property_detail' p.slug %}" class="btn btn-sm" style="background: rgba(39, 98, 33, 0.12); color: var(--green-light); border: none; border-radius: 8px;" title="View">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'properties:property_update' p.slug %}" class="btn btn-sm" style="background: rgba(220, 81, 5, 0.12); color: var(--orange-accent); border: none; border-radius: 8px;" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{% url 'properties:property_delete' p.slug %}" class="btn btn-sm" style="background: rgba(239, 83, 80, 0.12); color: var(--alert-danger-text); border: none; border-radius: 8px;" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

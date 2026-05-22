@@ -1,0 +1,152 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Barter.com{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center" style="min-height: 70vh;">
+        <div class="col-lg-10">
+            <div class="row g-0 shadow-lg rounded-4 overflow-hidden" style="background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid rgba(220,81,5,0.1);">
+                <!-- Left Side - Form -->
+                <div class="col-md-7 p-5">
+                    <div class="text-center mb-4">
+                        <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(220,81,5,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="fas fa-user-plus fa-2x" style="color: var(--orange-accent);"></i>
+                        </div>
+                        <h3 class="fw-bold" style="color: var(--text-primary);">Create Account</h3>
+                        <p style="color: var(--text-secondary);">Fill in the details to get started</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <div>{{ form.non_field_errors.0 }}</div>
+                            </div>
+                        {% endif %}
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.username.id_for_label }}" class="form-label fw-semibold" style="color: var(--orange-light);">
+                                    <i class="fas fa-user me-1"></i> Username
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-user" style="color: var(--green-light);"></i></span>
+                                    {{ form.username }}
+                                </div>
+                                {% if form.username.errors %}
+                                    <div class="text-danger small mt-1 d-flex align-items-center gap-1">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ form.username.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold" style="color: var(--orange-light);">
+                                    <i class="fas fa-envelope me-1"></i> Email
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-envelope" style="color: var(--green-light);"></i></span>
+                                    {{ form.email }}
+                                </div>
+                                {% if form.email.errors %}
+                                    <div class="text-danger small mt-1 d-flex align-items-center gap-1">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ form.email.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.password1.id_for_label }}" class="form-label fw-semibold" style="color: var(--orange-light);">
+                                    <i class="fas fa-lock me-1"></i> Password
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-lock" style="color: var(--green-light);"></i></span>
+                                    {{ form.password1 }}
+                                </div>
+                                {% if form.password1.errors %}
+                                    <div class="text-danger small mt-1 d-flex align-items-center gap-1">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ form.password1.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.password2.id_for_label }}" class="form-label fw-semibold" style="color: var(--orange-light);">
+                                    <i class="fas fa-check-circle me-1"></i> Confirm Password
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="fas fa-check-circle" style="color: var(--green-light);"></i></span>
+                                    {{ form.password2 }}
+                                </div>
+                                {% if form.password2.errors %}
+                                    <div class="text-danger small mt-1 d-flex align-items-center gap-1">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ form.password2.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mt-3 p-3 rounded-3" style="background: rgba(220,81,5,0.05); border: 1px solid rgba(220,81,5,0.1);">
+                            <p class="small mb-1" style="color: var(--text-secondary);"><i class="fas fa-info-circle me-1" style="color: var(--orange-accent);"></i> Password requirements:</p>
+                            <ul class="small" style="color: var(--text-secondary); margin-bottom: 0; padding-left: 1.5rem;">
+                                <li>At least 8 characters</li>
+                                <li>Can't be entirely numeric</li>
+                            </ul>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                <i class="fas fa-user-plus me-2"></i> Create Account
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4 pt-3" style="border-top: 1px solid rgba(220,81,5,0.1);">
+                        <p style="color: var(--text-secondary); margin-bottom: 0;">
+                            Already have an account?
+                            <a href="{% url 'properties:login' %}" class="fw-bold" style="color: var(--orange-light); text-decoration: none;">
+                                Sign in <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Side - Branding -->
+                <div class="col-md-5 d-none d-md-flex flex-column justify-content-center p-5 text-center" style="background: linear-gradient(135deg, var(--bg-card), var(--bg-secondary));">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <i class="fas fa-handshake fa-3x" style="color: var(--orange-light);"></i>
+                    </div>
+                    <h2 class="fw-bold mb-2" style="color: var(--text-primary);">Join Our Community</h2>
+                    <p style="color: var(--text-secondary);">Start buying, selling, and renting properties with thousands of satisfied users.</p>
+                    <div class="mt-4">
+                        <div style="width: 60px; height: 4px; border-radius: 2px; background: var(--orange-accent); margin: 0 auto;"></div>
+                    </div>
+                    <div class="mt-4 text-start mx-auto" style="max-width: 240px;">
+                        <p class="small mb-2" style="color: var(--text-secondary);">
+                            <i class="fas fa-check-circle me-2" style="color: var(--orange-accent);"></i> Free account
+                        </p>
+                        <p class="small mb-2" style="color: var(--text-secondary);">
+                            <i class="fas fa-check-circle me-2" style="color: var(--orange-accent);"></i> List properties instantly
+                        </p>
+                        <p class="small mb-2" style="color: var(--text-secondary);">
+                            <i class="fas fa-check-circle me-2" style="color: var(--orange-accent);"></i> Connect with buyers
+                        </p>
+                        <p class="small mb-0" style="color: var(--text-secondary);">
+                            <i class="fas fa-check-circle me-2" style="color: var(--orange-accent);"></i> 24/7 support
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

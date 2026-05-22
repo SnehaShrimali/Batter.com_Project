@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Barter.com{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center" style="min-height: 70vh;">
+        <div class="col-lg-10">
+            <div class="row g-0 shadow-lg rounded-4 overflow-hidden" style="background: var(--bg-card); backdrop-filter: blur(20px); border: 1px solid rgba(220,81,5,0.1);">
+                <!-- Left Side - Branding -->
+                <div class="col-md-5 d-none d-md-flex flex-column justify-content-center p-5 text-center" style="background: linear-gradient(135deg, var(--bg-secondary), var(--bg-card));">
+                    <div style="width: 100px; height: 100px; border-radius: 50%; background: rgba(220,81,5,0.15); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
+                        <i class="fas fa-home fa-3x" style="color: var(--orange-light);"></i>
+                    </div>
+                    <h2 class="fw-bold mb-2" style="color: var(--text-primary);">Welcome Back!</h2>
+                    <p style="color: var(--text-secondary);">Sign in to continue to your Barter.com account and manage your properties.</p>
+                    <div class="mt-4">
+                        <div style="width: 60px; height: 4px; border-radius: 2px; background: var(--orange-accent); margin: 0 auto;"></div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="small" style="color: var(--text-secondary);">
+                            <i class="fas fa-check-circle me-1" style="color: var(--orange-accent);"></i> Browse properties
+                        </p>
+                        <p class="small" style="color: var(--text-secondary);">
+                            <i class="fas fa-check-circle me-1" style="color: var(--orange-accent);"></i> Manage listings
+                        </p>
+                        <p class="small" style="color: var(--text-secondary);">
+                            <i class="fas fa-check-circle me-1" style="color: var(--orange-accent);"></i> Connect with buyers
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right Side - Form -->
+                <div class="col-md-7 p-5">
+                    <div class="text-center mb-4">
+                        <div style="width: 70px; height: 70px; border-radius: 50%; background: rgba(220,81,5,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;">
+                            <i class="fas fa-user-circle fa-2x" style="color: var(--orange-accent);"></i>
+                        </div>
+                        <h3 class="fw-bold" style="color: var(--text-primary);">Sign In</h3>
+                        <p style="color: var(--text-secondary);">Enter your credentials to access your account</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        {% if form.non_field_errors %}
+                            <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <div>{{ form.non_field_errors.0 }}</div>
+                            </div>
+                        {% endif %}
+
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold" style="color: var(--orange-light);">
+                                    {% if field.name == 'username' %}
+                                        <i class="fas fa-user me-1"></i> Username
+                                    {% elif field.name == 'password' %}
+                                        <i class="fas fa-lock me-1"></i> Password
+                                    {% else %}
+                                        {{ field.label }}
+                                    {% endif %}
+                                </label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="fas {% if field.name == 'username' %}fa-user{% else %}fa-lock{% endif %}" style="color: var(--green-light);"></i>
+                                    </span>
+                                    {{ field }}
+                                </div>
+                                {% if field.errors %}
+                                    <div class="text-danger small mt-1 d-flex align-items-center gap-1">
+                                        <i class="fas fa-exclamation-circle"></i>
+                                        {{ field.errors.0 }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" style="border-color: var(--orange-accent);">
+                                <label class="form-check-label small" for="remember" style="color: var(--text-secondary);">Remember me</label>
+                            </div>
+                            <a href="#" class="small" style="color: var(--orange-accent); text-decoration: none;">Forgot password?</a>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                                <i class="fas fa-sign-in-alt me-2"></i> Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-4 pt-3" style="border-top: 1px solid rgba(220,81,5,0.1);">
+                        <p style="color: var(--text-secondary); margin-bottom: 0;">
+                            Don't have an account?
+                            <a href="{% url 'properties:register' %}" class="fw-bold" style="color: var(--orange-light); text-decoration: none;">
+                                Create one here <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users - Admin{% endblock %}
+{% block content %}
+<div class="admin-header d-flex flex-wrap justify-content-between align-items-center">
+    <div>
+        <h3 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fas fa-users me-2" style="color: var(--orange-accent);"></i> All Users</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Total: {{ users|length }} users</p>
+    </div>
+    <a href="{% url 'properties:admin_dashboard' %}" class="btn btn-outline-secondary mt-3 mt-md-0">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="admin-card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Properties</th>
+                    <th>Joined</th>
+                    <th>Last Login</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr>
+                    <td><strong style="color: var(--text-primary);">{{ u.username }}</strong></td>
+                    <td style="color: var(--text-secondary);">{{ u.email|default:"—" }}</td>
+                    <td>
+                        {% if u.is_superuser %}
+                            <span class="badge bg-danger">Super Admin</span>
+                        {% elif u.is_staff %}
+                            <span class="badge bg-warning">Staff</span>
+                        {% else %}
+                            <span class="badge bg-info">Buyer/Seller</span>
+                        {% endif %}
+                    </td>
+                    <td style="color: var(--orange-light); font-weight: 600;">{{ u.properties.count }}</td>
+                    <td><small style="color: var(--text-secondary);">{{ u.date_joined|date:"M d, Y" }}</small></td>
+                    <td><small style="color: var(--text-secondary);">{{ u.last_login|date:"M d, Y"|default:"Never" }}</small></td>
+                    <td>
+                        <a href="{% url 'properties:admin_user_delete' u.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center py-4" style="color: var(--text-muted);">No users found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Inquiries - Admin{% endblock %}
+{% block content %}
+<div class="admin-header d-flex flex-wrap justify-content-between align-items-center">
+    <div>
+        <h3 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fas fa-envelope me-2" style="color: var(--orange-accent);"></i> Buyer Inquiries</h3>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Total: {{ inquiries|length }} inquiries</p>
+    </div>
+    <div class="d-flex gap-2 mt-3 mt-md-0">
+        <a href="{% url 'properties:admin_appointment_list' %}" class="btn btn-outline-primary">
+            <i class="fas fa-calendar"></i> Appointments
+        </a>
+        <a href="{% url 'properties:admin_dashboard' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+</div>
+
+<div class="admin-card">
+    <div class="table-responsive">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Property</th>
+                    <th>Buyer Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for i in inquiries %}
+                <tr>
+                    <td><a href="{% url 'properties:property_detail' i.property.slug %}" class="text-decoration-none" style="color: var(--text-primary);">{{ i.property.title|truncatechars:20 }}</a></td>
+                    <td><strong style="color: var(--text-primary);">{{ i.name }}</strong></td>
+                    <td style="color: var(--text-secondary);">{{ i.email }}</td>
+                    <td style="color: var(--text-secondary);">{{ i.phone }}</td>
+                    <td><small style="color: var(--text-secondary);">{{ i.message|truncatechars:50 }}</small></td>
+                    <td><small style="color: var(--text-secondary);">{{ i.created_at|date:"M d, Y" }}</small></td>
+                    <td>
+                        <a href="{% url 'properties:admin_inquiry_delete' i.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center py-4" style="color: var(--text-muted);">No inquiries yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

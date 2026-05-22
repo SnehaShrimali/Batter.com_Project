@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ property.title }} - Barter.com{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-8">
+        <div class="glass-card p-0 overflow-hidden mb-4">
+            {% if property.main_image %}
+                <img src="{{ property.main_image.url }}" class="card-img-top w-100" alt="{{ property.title }}" style="max-height: 500px; object-fit: cover;">
+            {% else %}
+                <img src="https://images.unsplash.com/photo-1560512823-829485b8bf24?w=800&h=500&fit=crop"
+                     class="card-img-top w-100" alt="Property" style="max-height: 500px; object-fit: cover;">
+            {% endif %}
+        </div>
+
+        <div class="glass-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap">
+                <div>
+                    <h2 class="fw-bold" style="color: var(--text-primary);">{{ property.title }}</h2>
+                    <p style="color: var(--text-secondary);">
+                        <i class="fas fa-map-marker-alt" style="color: var(--accent-2);"></i> {{ property.address }}, {{ property.city }}, {{ property.state }} {{ property.zip_code }}
+                    </p>
+                </div>
+                <span class="badge fs-6 mt-2 mt-md-0 {% if property.status == 'available' %}bg-success{% elif property.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">
+                    {{ property.get_status_display }}
+                </span>
+            </div>
+
+            <p class="property-price mb-4" style="font-size: 2rem;">${{ property.price|floatformat:0 }}</p>
+
+            <div class="row text-center py-3 mb-4" style="background: var(--bg-secondary); border-radius: 12px; border: 1px solid var(--glass-border);">
+                <div class="col-3">
+                    <small class="detail-label d-block">Type</small>
+                    <strong class="detail-value">{{ property.get_property_type_display }}</strong>
+                </div>
+                <div class="col-3">
+                    <small class="detail-label d-block"><i class="fas fa-bed"></i> Bedrooms</small>
+                    <strong class="detail-value">{{ property.bedrooms }}</strong>
+                </div>
+                <div class="col-3">
+                    <small class="detail-label d-block"><i class="fas fa-bath"></i> Bathrooms</small>
+                    <strong class="detail-value">{{ property.bathrooms }}</strong>
+                </div>
+                <div class="col-3">
+                    <small class="detail-label d-block"><i class="fas fa-ruler-combined"></i> Area</small>
+                    <strong class="detail-value">{{ property.area }} sqft</strong>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3" style="color: var(--text-primary);">Description</h5>
+            <p style="color: var(--text-secondary); line-height: 1.7;">{{ property.description }}</p>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="p-4 mb-4 rounded-4" style="background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid rgba(220,81,5,0.1);">
+            <h5 class="fw-bold mb-3" style="color: var(--text-primary);"><i class="fas fa-user me-2" style="color: var(--orange-accent);"></i> Owner Info</h5>
+            <p class="mb-1" style="color: var(--orange-light); font-weight: 600;">{{ property.owner.username }}</p>
+            <p style="color: var(--text-secondary);">Member since {{ property.owner.date_joined|date:"M Y" }}</p>
+        </div>
+
+        {% if user.is_authenticated and user != property.owner %}
+        <div class="p-4 mb-4 rounded-4" style="background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid rgba(220,81,5,0.1);">
+            <div class="d-grid gap-2">
+                <a href="{% url 'properties:book_appointment' property.slug %}" class="btn btn-primary btn-lg fw-bold">
+                    <i class="fas fa-calendar-check me-2"></i> Book a Viewing
+                </a>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if user == property.owner %}
+        <div class="p-4 mb-4 rounded-4" style="background: var(--bg-card); backdrop-filter: blur(12px); border: 1px solid rgba(220,81,5,0.1);">
+            <h5 class="fw-bold mb-3" style="color: var(--text-primary);"><i class="fas fa-cog me-2" style="color: var(--orange-accent);"></i> Manage</h5>
+            <div class="d-grid gap-2">
+                <a href="{% url 'properties:property_update' property.slug %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Edit Property
+                </a>
+                <a href="{% url 'properties:property_delete' property.slug %}" class="btn btn-outline-danger">
+                    <i class="fas fa-trash"></i> Delete Property
+                </a>
+                <a href="{% url 'properties:property_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to List
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

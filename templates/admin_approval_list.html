@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin - Approval Requests{% endblock %}
+
+{% block content %}
+<div class="admin-header d-flex flex-wrap justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fas fa-clipboard-check me-2" style="color: var(--orange-accent);"></i> Approval Requests</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Review and manage user approval requests.</p>
+    </div>
+    <a href="{% url 'properties:admin_dashboard' %}" class="btn btn-outline-secondary rounded-pill px-3">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<!-- Filter Tabs -->
+<div class="d-flex gap-2 mb-4 flex-wrap">
+    <a href="{% url 'properties:admin_approval_list' %}" class="btn {% if not status_filter %}btn-primary{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+        All
+    </a>
+    <a href="{% url 'properties:admin_approval_list' %}?status=pending" class="btn {% if status_filter == 'pending' %}btn-warning{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+        <i class="fas fa-clock"></i> Pending
+    </a>
+    <a href="{% url 'properties:admin_approval_list' %}?status=approved" class="btn {% if status_filter == 'approved' %}btn-success{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+        <i class="fas fa-check"></i> Approved
+    </a>
+    <a href="{% url 'properties:admin_approval_list' %}?status=rejected" class="btn {% if status_filter == 'rejected' %}btn-danger{% else %}btn-outline-secondary{% endif %} rounded-pill px-3">
+        <i class="fas fa-times"></i> Rejected
+    </a>
+</div>
+
+{% if approval_requests %}
+<div class="admin-card">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Subject</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Submitted</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in approval_requests %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-primary);">{{ req.user.username }}</strong>
+                            <br><small class="text-muted">{{ req.user.email }}</small>
+                        </td>
+                        <td>
+                            <span data-bs-toggle="tooltip" title="{{ req.description }}">{{ req.subject|truncatechars:30 }}</span>
+                        </td>
+                        <td style="color: var(--text-secondary);">{{ req.get_request_type_display }}</td>
+                        <td>
+                            <span class="badge {% if req.status == 'approved' %}bg-success{% elif req.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                {{ req.get_status_display }}
+                            </span>
+                        </td>
+                        <td style="color: var(--text-secondary);">{{ req.created_at|date:"M d, Y" }}</td>
+                        <td>
+                            {% if req.status == 'pending' %}
+                            <button type="button" class="btn btn-sm btn-outline-success me-1" data-bs-toggle="modal" data-bs-target="#approveModal{{ req.pk }}">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#rejectModal{{ req.pk }}">
+                                <i class="fas fa-times"></i>
+                            </button>
+
+                            <!-- Approve Modal -->
+                            <div class="modal fade" id="approveModal{{ req.pk }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{% url 'properties:admin_approval_action' req.pk %}">
+                                            {% csrf_token %}
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" style="color: var(--green-light);"><i class="fas fa-check-circle me-2"></i> Approve Request</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p><strong>Subject:</strong> {{ req.subject }}</p>
+                                                <p><strong>User:</strong> {{ req.user.username }}</p>
+                                                <p><strong>Description:</strong></p>
+                                                <p class="text-muted">{{ req.description }}</p>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold">Notes (optional)</label>
+                                                    <textarea name="admin_notes" class="form-control" rows="3" placeholder="Add any notes for the user..."></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <input type="hidden" name="action" value="approved">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-success"><i class="fas fa-check"></i> Approve</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Reject Modal -->
+                            <div class="modal fade" id="rejectModal{{ req.pk }}" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{% url 'properties:admin_approval_action' req.pk %}">
+                                            {% csrf_token %}
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" style="color: var(--alert-danger-text);"><i class="fas fa-times-circle me-2"></i> Reject Request</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p><strong>Subject:</strong> {{ req.subject }}</p>
+                                                <p><strong>User:</strong> {{ req.user.username }}</p>
+                                                <p><strong>Description:</strong></p>
+                                                <p class="text-muted">{{ req.description }}</p>
+                                                <div class="mb-3">
+                                                    <label class="form-label fw-semibold">Reason for rejection</label>
+                                                    <textarea name="admin_notes" class="form-control" rows="3" placeholder="Explain why this request was rejected..." required></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <input type="hidden" name="action" value="rejected">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <button type="submit" class="btn btn-danger"><i class="fas fa-times"></i> Reject</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">{{ req.reviewed_by.username|default:"-" }}</span>
+                            <br><small class="text-muted">{{ req.reviewed_at|date:"M d, Y" }}</small>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="admin-card text-center py-5">
+    <i class="fas fa-inbox fa-3x mb-3" style="color: var(--text-muted);"></i>
+    <h5 style="color: var(--text-primary);">No approval requests</h5>
+    <p style="color: var(--text-secondary);">There are no approval requests{% if status_filter %} with this status{% endif %}.</p>
+</div>
+{% endif %}
+{% endblock %}

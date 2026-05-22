@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+{% block title %}Admin Dashboard - Barter.com{% endblock %}
+{% block content %}
+<div class="admin-header d-flex flex-wrap justify-content-between align-items-center">
+    <div>
+        <h2 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fas fa-shield-alt me-2" style="color: var(--orange-accent);"></i> Mediator Dashboard</h2>
+        <p style="color: var(--text-secondary); margin-bottom: 0;">Manage sellers, buyers, properties, inquiries, and appointments</p>
+    </div>
+    <div class="d-flex gap-2 mt-3 mt-md-0 flex-wrap">
+        <a href="{% url 'properties:admin_property_list' %}" class="btn btn-primary px-3">
+            <i class="fas fa-home"></i> Properties
+        </a>
+        <a href="{% url 'properties:admin_user_list' %}" class="btn btn-success px-3">
+            <i class="fas fa-users"></i> Users
+        </a>
+        <a href="{% url 'properties:admin_approval_list' %}" class="btn btn-warning px-3">
+            <i class="fas fa-clipboard-check"></i> Approvals {% if pending_approvals > 0 %}<span class="badge bg-dark">{{ pending_approvals }}</span>{% endif %}
+        </a>
+        <a href="{% url 'properties:admin_inquiry_list' %}" class="btn px-3" style="background: linear-gradient(135deg, var(--orange-accent), #fb8c00); color: white; border: none; border-radius: 12px;">
+            <i class="fas fa-envelope"></i> Inquiries
+        </a>
+        <a href="{% url 'properties:admin_appointment_list' %}" class="btn btn-info px-3">
+            <i class="fas fa-calendar"></i> Appointments
+        </a>
+    </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-home"></i></div>
+                <div>
+                    <h4>{{ total_properties }}</h4>
+                    <p>Total Properties</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div>
+                    <h4>{{ pending_properties }}</h4>
+                    <p>Pending Approval</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+                <div>
+                    <h4>{{ available_properties }}</h4>
+                    <p>Available</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div>
+                    <h4>{{ total_users }}</h4>
+                    <p>Total Users</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Second Stats Row - Inquiries & Appointments -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-envelope"></i></div>
+                <div>
+                    <h4>{{ total_inquiries }}</h4>
+                    <p>Total Inquiries</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-calendar-check"></i></div>
+                <div>
+                    <h4>{{ total_appointments }}</h4>
+                    <p>Total Appointments</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-clipboard-check"></i></div>
+                <div>
+                    <h4>{{ pending_approvals|default:"0" }}</h4>
+                    <p>Pending Approvals</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="admin-stat-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+                <div class="stat-icon"><i class="fas fa-check-double"></i></div>
+                <div>
+                    <h4>{{ available_properties }}</h4>
+                    <p>Ready to Sell/Rent</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-home me-2" style="color: var(--green-light);"></i> Recent Properties</span>
+                <a href="{% url 'properties:admin_property_list' %}" class="btn btn-sm btn-outline-success">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Owner</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in recent_properties %}
+                            <tr>
+                                <td><a href="{% url 'properties:admin_property_detail' p.pk %}" class="text-decoration-none fw-semibold" style="color: var(--orange-accent);">{{ p.title|truncatechars:25 }}</a></td>
+                                <td style="color: var(--text-secondary);">{{ p.owner.username }}</td>
+                                <td style="color: var(--orange-light); font-weight: 600;">${{ p.price|floatformat:0 }}</td>
+                                <td><span class="badge {% if p.status == 'available' %}bg-success{% elif p.status == 'pending' %}bg-warning{% else %}bg-secondary{% endif %}">{{ p.get_status_display }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="4" class="text-center py-4" style="color: var(--text-muted);">No properties yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="admin-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span><i class="fas fa-envelope me-2" style="color: var(--orange-accent);"></i> Recent Inquiries</span>
+                <a href="{% url 'properties:admin_inquiry_list' %}" class="btn btn-sm btn-outline-warning">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Property</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for i in recent_inquiries %}
+                            <tr>
+                                <td><strong style="color: var(--text-primary);">{{ i.name }}</strong></td>
+                                <td style="color: var(--text-secondary);">{{ i.property.title|truncatechars:20 }}</td>
+                                <td style="color: var(--text-secondary);">{{ i.created_at|date:"M d, Y" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="3" class="text-center py-4" style="color: var(--text-muted);">No inquiries yet.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <div class="icon-circle">
+                <i class="fas fa-home fa-2x"></i>
+            </div>
+            <h5>Manage Properties</h5>
+            <p>Approve, edit, or remove property listings.</p>
+            <a href="{% url 'properties:admin_property_list' %}" class="btn btn-primary">Go to Properties</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <div class="icon-circle">
+                <i class="fas fa-users fa-2x"></i>
+            </div>
+            <h5>Manage Users</h5>
+            <p>View and manage sellers and buyers.</p>
+            <a href="{% url 'properties:admin_user_list' %}" class="btn btn-info">Go to Users</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <div class="icon-circle">
+                <i class="fas fa-clipboard-check fa-2x"></i>
+            </div>
+            <h5>Approval Requests</h5>
+            <p>Review and approve/reject user requests.</p>
+            <a href="{% url 'properties:admin_approval_list' %}" class="btn btn-warning">Manage Approvals</a>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="dashboard-card text-center">
+            <div class="icon-circle">
+                <i class="fas fa-envelope fa-2x"></i>
+            </div>
+            <h5>Inquiries &amp; Appointments</h5>
+            <p>View buyer inquiries and scheduled appointments.</p>
+            <div class="d-flex gap-2 justify-content-center">
+                <a href="{% url 'properties:admin_inquiry_list' %}" class="btn btn-sm btn-outline-warning">Inquiries</a>
+                <a href="{% url 'properties:admin_appointment_list' %}" class="btn btn-sm btn-outline-info">Appointments</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
